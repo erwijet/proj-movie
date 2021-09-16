@@ -1,3 +1,4 @@
+from typing import Iterable, Iterator
 from util import *
 
 
@@ -21,18 +22,21 @@ class QueryableFilmCollection:
                 self.films[film_item.tconst] = Film(
                     film_item, self.films.get(film_item.tconst))
 
-    def lookup(self, tconst: str):
+    def lookup(self, tconst: str) -> list[Film]:
         return self.films[tconst]
 
-    def contains(self, title_type: str, words: str):
+    def contains(self, title_type: str, words: str) -> list[Film]:
         # match by title_type (exact) and words (similar)
 
-        return filter(lambda film:
-                      film.film_item.title_type == title_type and
-                      words in film.film_item.primary_title)
+        return list(filter(lambda film:
+                           film.film_item.title_type == title_type and
+                           words in film.film_item.primary_title))
 
-    def year_and_genre(self, title_type: str, year: int, genre: str):
-        pass
+    def year_and_genre(self, title_type: str, year: int, genre: str) -> list[Film]:
+        return list(filter(lambda film:
+                           film.film_item.title_type == title_type and
+                           film.film_item.start_year == year and
+                           genre in film.film_item.genre))
 
     def runtime(self, title_type: str, min_minutes: int, max_minutes: int):
         pass
