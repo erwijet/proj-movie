@@ -25,7 +25,11 @@ class QueryableFilmCollection:
         return self.films[tconst]
 
     def contains(self, title_type: str, words: str):
-        pass
+        # match by title_type (exact) and words (similar)
+
+        return filter(lambda film:
+                      film.film_item.title_type == title_type and
+                      words in film.film_item.primary_title)
 
     def year_and_genre(self, title_type: str, year: int, genre: str):
         pass
