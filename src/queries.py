@@ -30,16 +30,19 @@ class QueryableFilmCollection:
 
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
-                           words in film.film_item.primary_title))
+                           words in film.film_item.primary_title), self.films.values())
 
     def year_and_genre(self, title_type: str, year: int, genre: str) -> list[Film]:
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            film.film_item.start_year == year and
-                           genre in film.film_item.genre))
+                           genre in film.film_item.genre), self.films.values())
 
     def runtime(self, title_type: str, min_minutes: int, max_minutes: int):
-        pass
+        return list(filter(lambda film:
+                           film.film_item.title_type == title_type and
+                           film.film_item.runtimeMinutes >= min_minutes and
+                           film.film_item.runtimeMinutes <= max_minutes), self.films)
 
     def most_votes(self, title_type: str, num: int):
         pass
