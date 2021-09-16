@@ -11,7 +11,7 @@ class FilmItem:
     startYear: int
     endYear: int
     runtimeMinutes: int
-    genres: str
+    genres: tuple(str)
 
     @staticmethod
     def from_tsv(tsv_parsable: str):
@@ -26,14 +26,20 @@ class FilmItem:
         parsed
         """
 
+        # inital parse of props
         props = tsv_parsable.split('\t')
 
-        # boolean values are given as binary strings;
-        #   fix them here
-        props[4] = props[4] == '1'
+        # replace str-binary value with boolean values for prop
+        # "isAdult" at idx 4
+        PROP_ISADULT_IDX = 4
+        props[PROP_ISADULT_IDX] = props[PROP_ISADULT_IDX] == '1'
 
         # replace any occurances of '\\n' with None
         props = [prop if prop != '\\N' else None for prop in props]
+
+        # construct tuple for prop "genre" at idx 8
+        PROP_GENRE_IDX = 8
+        props[PROP_GENRE_IDX] = tuple(props[PROP_GENRE_IDX].split(','))
 
         return FilmItem(*props)
 
