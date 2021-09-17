@@ -1,7 +1,5 @@
-from _typeshed import NoneType
 from dataclasses import dataclass
 from time import time
-from typing import Callable, TypeVar
 
 
 @dataclass
@@ -43,6 +41,10 @@ class FilmItem:
 
         # replace any occurances of '\\n' with None
         props = [prop if prop != '\\N' else None for prop in props]
+
+        # cast prop idxs 5-7 to integers (start_year, end_year, runtime_min)
+        props = [int(props[i]) if i in range(5, 8) and props[i]
+                 is not None else props[i] for i in range(len(props))]
 
         # construct tuple for prop "genre" at idx 8
         PROP_GENRE_IDX = 8
@@ -88,7 +90,7 @@ class Film:
     film_rating: FilmRating
 
 
-def timed_function(func) -> Callable[..., NoneType]:
+def timed_function(func):
     """
     timed_function function decorator
 

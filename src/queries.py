@@ -10,13 +10,21 @@ class QueryableFilmCollection:
 
         # load ratings first into dictionary
         with open(tsv_ratings_path) as ratings_file:
-            for line in ratings_file:
+            file_iter = iter(ratings_file)
+            # explicity consume and discard the first line (headers)
+            next(file_iter)
+
+            for line in file_iter:
                 film_rating = FilmRating.from_tsv(line.strip('\n'))
                 self.films[film_rating.tconst] = film_rating
 
         # then load film items and update dictionary
 
         with open(tsv_item_path) as item_file:
+            file_iter = iter(item_file)
+            # explicity consume and discard the first line (headers)
+            next(file_iter)
+
             for line in item_file:
                 film_item = FilmItem.from_tsv(line.strip('\n'))
                 self.films[film_item.tconst] = Film(
@@ -45,12 +53,22 @@ class QueryableFilmCollection:
         if len(results) == 0:
             print('\tNo match found!')
 
-    @ timed_function
-    def year_and_genre(self, title_type: str, year: int, genre: str) -> list[Film]:
-        return list(filter(lambda film:
-                           film.film_item.title_type == title_type and
-                           film.film_item.start_year == year and
-                           genre in film.film_item.genre), self.films.values())
+    @timed_function
+    def year_and_genre(self, title_type: str, year: int, genre: str) -> None:
+        print('Processing YEAR_AND_GENRE ', title_type, year, genre)
+
+        results = list(filter(lambda film:
+                              film.film_item.title_type == title_type and
+                              film.film_item.start_year == year and
+                              genre in film.film_item.genres, self.films.values()))
+
+        results.sort(key=lambda film: film.film_item.primary_title)
+
+        for film in results:
+            print('\t' + str(film.film_item))
+
+        if len(results) == 0:
+            print('\tNo match found!')
 
     @ timed_function
     def runtime(self, title_type: str, min_minutes: int, max_minutes: int) -> list[Film]:
