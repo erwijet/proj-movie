@@ -12,9 +12,11 @@ class DataSetType(Enum):
 
 def main(argv):
     collection = QueryableFilmCollection(
-        '../data/small.basics.tsv', '../data/small.ratings.tsv')
+        'C:/Users/17198/rit/projects/csapx/project-1-movies-erwijet/data/small.basics.tsv', 'C:/Users/17198/rit/projects/csapx/project-1-movies-erwijet/data/small.ratings.tsv')
 
-    print(collection)
+    # for elem in collection.films.keys():
+    #     print(elem)
+    collection.lookup('tt0081505')
 
 
 if __name__ == '__main__':

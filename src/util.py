@@ -4,14 +4,18 @@ from dataclasses import dataclass
 @dataclass
 class FilmItem:
     tconst: str
-    titleType: str
-    primaryTitle: str
-    originalTitle: str
-    isAdult: bool
-    startYear: int
-    endYear: int
-    runtimeMinutes: int
-    genres: tuple(str)
+    title_type: str
+    primary_title: str
+    original_title: str
+    is_adult: bool
+    start_year: int
+    end_year: int
+    runtime_minutes: int
+    genres: tuple
+
+    def __str__(self) -> str:
+        return 'MOVIE: Identifier: {0}, Title: {1}, Type: {2}, Year: {3}, Runtime: {4}, Genres: {5}'.format(
+            self.tconst, self.primary_title, self.title_type, self.start_year, self.runtime_minutes, ', '.join(self.genres))
 
     @staticmethod
     def from_tsv(tsv_parsable: str):
@@ -30,9 +34,9 @@ class FilmItem:
         props = tsv_parsable.split('\t')
 
         # replace str-binary value with boolean values for prop
-        # "isAdult" at idx 4
-        PROP_ISADULT_IDX = 4
-        props[PROP_ISADULT_IDX] = props[PROP_ISADULT_IDX] == '1'
+        # "is_adult" at idx 4
+        PROP_is_adult_IDX = 4
+        props[PROP_is_adult_IDX] = props[PROP_is_adult_IDX] == '1'
 
         # replace any occurances of '\\n' with None
         props = [prop if prop != '\\N' else None for prop in props]
@@ -49,6 +53,9 @@ class FilmRating:
     tconst: str
     rating: float
     num_ratings: int
+
+    def __str__(self) -> str:
+        return 'RATING: Identifier: {0}, Rating: {1}, Votes: {2}'.format(self.tconst, self.rating, self.num_ratings)
 
     @staticmethod
     def from_tsv(tsv_parsable: str):
@@ -67,7 +74,7 @@ class FilmRating:
         return FilmRating(*props)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Film:
     """
     bind a given instance of FilmItem to its corresponding

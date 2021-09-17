@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator
+from time import time
 from util import *
 
 
@@ -11,37 +11,57 @@ class QueryableFilmCollection:
         # load ratings first into dictionary
         with open(tsv_ratings_path) as ratings_file:
             for line in ratings_file:
-                film_rating = FilmRating.from_tsv(line)
+                film_rating = FilmRating.from_tsv(line.strip('\n'))
                 self.films[film_rating.tconst] = film_rating
 
-        # the load ilm items and update dictionary
+        # then load film items and update dictionary
 
         with open(tsv_item_path) as item_file:
             for line in item_file:
-                film_item = FilmItem.from_tsv(line)
+                film_item = FilmItem.from_tsv(line.strip('\n'))
                 self.films[film_item.tconst] = Film(
                     film_item, self.films.get(film_item.tconst))
 
-    def lookup(self, tconst: str) -> list[Film]:
-        return self.films[tconst]
+    def timed_function(func):
+        def wrapped(*args):
+            t0 = time()
+            func(*args)
+            print('elapsed time (s): ' + str((time() - t0)))
 
+        return wrapped
+
+    @timed_function
+    def lookup(self, tconst: str) -> None:
+        print('Processing LOOKUP ', tconst)
+
+        results = self.films.get(tconst)
+        res = str(results.film_item)
+        print('\t' + str(results.film_item) if results is not None and results.film_item is not
+              None else '\tMovie not found!')
+        print('\t' + str(results.film_rating)
+              if results is not None and results.film_rating != None else '\tRating not found!')
+
+    @timed_function
     def contains(self, title_type: str, words: str) -> list[Film]:
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            words in film.film_item.primary_title), self.films.values())
 
+    @timed_function
     def year_and_genre(self, title_type: str, year: int, genre: str) -> list[Film]:
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            film.film_item.start_year == year and
                            genre in film.film_item.genre), self.films.values())
 
+    @timed_function
     def runtime(self, title_type: str, min_minutes: int, max_minutes: int) -> list[Film]:
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            film.film_item.runtimeMinutes >= min_minutes and
                            film.film_item.runtimeMinutes <= max_minutes), self.films.values())
 
+    @timed_function
     def most_votes(self, title_type: str, num: int) -> list[Film]:
         return list(
             sorted(
@@ -50,6 +70,7 @@ class QueryableFilmCollection:
                     self.films.values()),
                 key=lambda film: film.film_rating.num_votes))[:num]
 
+    @timed_function
     def top(self, title_type: str, num: int, start_year: int, end_year: int) -> list[Film]:
 
         # select films matching title_type, exclude films
