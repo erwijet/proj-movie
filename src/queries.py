@@ -35,33 +35,39 @@ class QueryableFilmCollection:
         print('Processing LOOKUP ', tconst)
 
         results = self.films.get(tconst)
-        res = str(results.film_item)
         print('\t' + str(results.film_item) if results is not None and results.film_item is not
               None else '\tMovie not found!')
         print('\t' + str(results.film_rating)
               if results is not None and results.film_rating != None else '\tRating not found!')
 
     @timed_function
-    def contains(self, title_type: str, words: str) -> list[Film]:
-        return list(filter(lambda film:
-                           film.film_item.title_type == title_type and
-                           words in film.film_item.primary_title), self.films.values())
+    def contains(self, title_type: str, words: str) -> None:
+        print('Processing CONTAINS', title_type, words)
 
-    @timed_function
+        results = list(filter(lambda film:
+                              film.film_item.title_type == title_type and
+                              words in film.film_item.primary_title, self.films.values()))
+        for film in results:
+            print('\t' + str(film.film_item))
+
+        if len(results) == 0:
+            print('\tNo match found!')
+
+    @ timed_function
     def year_and_genre(self, title_type: str, year: int, genre: str) -> list[Film]:
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            film.film_item.start_year == year and
                            genre in film.film_item.genre), self.films.values())
 
-    @timed_function
+    @ timed_function
     def runtime(self, title_type: str, min_minutes: int, max_minutes: int) -> list[Film]:
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            film.film_item.runtimeMinutes >= min_minutes and
                            film.film_item.runtimeMinutes <= max_minutes), self.films.values())
 
-    @timed_function
+    @ timed_function
     def most_votes(self, title_type: str, num: int) -> list[Film]:
         return list(
             sorted(
@@ -70,7 +76,7 @@ class QueryableFilmCollection:
                     self.films.values()),
                 key=lambda film: film.film_rating.num_votes))[:num]
 
-    @timed_function
+    @ timed_function
     def top(self, title_type: str, num: int, start_year: int, end_year: int) -> list[Film]:
 
         # select films matching title_type, exclude films
