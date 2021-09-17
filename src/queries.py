@@ -55,7 +55,7 @@ class QueryableFilmCollection:
 
     @timed_function
     def year_and_genre(self, title_type: str, year: int, genre: str) -> None:
-        print('Processing YEAR_AND_GENRE ', title_type, year, genre)
+        print('Processing YEAR_AND_GENRE', title_type, year, genre)
 
         results = list(filter(lambda film:
                               film.film_item.title_type == title_type and
@@ -70,12 +70,25 @@ class QueryableFilmCollection:
         if len(results) == 0:
             print('\tNo match found!')
 
-    @ timed_function
-    def runtime(self, title_type: str, min_minutes: int, max_minutes: int) -> list[Film]:
-        return list(filter(lambda film:
-                           film.film_item.title_type == title_type and
-                           film.film_item.runtimeMinutes >= min_minutes and
-                           film.film_item.runtimeMinutes <= max_minutes), self.films.values())
+    @timed_function
+    def runtime(self, title_type: str, min_minutes: int, max_minutes: int) -> None:
+        print('Processing RUNTIME', title_type, min_minutes, max_minutes)
+
+        results = list(filter(lambda film:
+                              film.film_item.runtime_minutes is not None and
+                              film.film_item.title_type == title_type and
+                              film.film_item.runtime_minutes >= min_minutes and
+                              film.film_item.runtime_minutes <= max_minutes, self.films.values()))
+
+        results.sort(key=lambda film: film.film_item.primary_title)
+        results.sort(
+            key=lambda film: film.film_item.runtime_minutes, reverse=True)
+
+        for film in results:
+            print('\t' + str(film.film_item))
+
+        if len(results) == 0:
+            print('\tNo match found!')
 
     @ timed_function
     def most_votes(self, title_type: str, num: int) -> list[Film]:
