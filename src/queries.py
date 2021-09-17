@@ -26,8 +26,6 @@ class QueryableFilmCollection:
         return self.films[tconst]
 
     def contains(self, title_type: str, words: str) -> list[Film]:
-        # match by title_type (exact) and words (similar)
-
         return list(filter(lambda film:
                            film.film_item.title_type == title_type and
                            words in film.film_item.primary_title), self.films.values())
@@ -45,7 +43,23 @@ class QueryableFilmCollection:
                            film.film_item.runtimeMinutes <= max_minutes), self.films.values())
 
     def most_votes(self, title_type: str, num: int) -> list[Film]:
-        return list(sorted(self.films.values(), key=lambda film: film.film_rating.num_votes))[:num]
+        return list(
+            sorted(
+                filter(
+                    lambda film: film.film_item.title_type == title_type,
+                    self.films.values()),
+                key=lambda film: film.film_rating.num_votes))[:num]
 
-    def top(self, title_type: str, start_year: int, end_year: int):
-        pass
+    def top(self, title_type: str, num: int, start_year: int, end_year: int) -> list[Film]:
+
+        # select films matching title_type, exclude films
+        # outside year range and also exclude any films with
+        # less than 1000 ratings (as per project spec)
+        filtered = filter(lambda film:
+                          film.film_item.title_type == title_type and
+                          film.film_rating.num_ratings >= 1000 and
+                          film.film_item.start_year >= start_year and
+                          film.film_item.end_year <= end_year, self.films.values())
+
+        return [sorted(filter(lambda film: film.film_item.start_year == year, filtered), key=lambda film: film.film_rating.rating)[:num]
+                for year in range(start_year, end_year)]
