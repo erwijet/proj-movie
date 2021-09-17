@@ -22,14 +22,6 @@ class QueryableFilmCollection:
                 self.films[film_item.tconst] = Film(
                     film_item, self.films.get(film_item.tconst))
 
-    def timed_function(func):
-        def wrapped(*args):
-            t0 = time()
-            func(*args)
-            print('elapsed time (s): ' + str((time() - t0)))
-
-        return wrapped
-
     @timed_function
     def lookup(self, tconst: str) -> None:
         print('Processing LOOKUP ', tconst)

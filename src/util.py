@@ -1,4 +1,7 @@
+from _typeshed import NoneType
 from dataclasses import dataclass
+from time import time
+from typing import Callable, TypeVar
 
 
 @dataclass
@@ -83,3 +86,22 @@ class Film:
 
     film_item: FilmItem
     film_rating: FilmRating
+
+
+def timed_function(func) -> Callable[..., NoneType]:
+    """
+    timed_function function decorator
+
+    when applied, the specified function's runtime
+    will be measured and printed following the excution of
+    the function, func
+
+    :return: the function, func, wrapped with the timing
+    functionality
+    """
+    def wrapped(*args):
+        t0 = time()
+        func(*args)
+        print('elapsed time (s): ' + str((time() - t0)))
+
+    return wrapped
