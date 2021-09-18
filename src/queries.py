@@ -125,15 +125,37 @@ class QueryableFilmCollection:
 
     @ timed_function
     def top(self, title_type: str, num: int, start_year: int, end_year: int) -> list[Film]:
+        print('Processing TOP ', title_type, num, start_year, end_year)
 
         # select films matching title_type, exclude films
         # outside year range and also exclude any films with
         # less than 1000 ratings (as per project spec)
-        filtered = filter(lambda film:
-                          film.film_item.title_type == title_type and
-                          film.film_rating.num_ratings >= 1000 and
-                          film.film_item.start_year >= start_year and
-                          film.film_item.end_year <= end_year, self.films.values())
+        filtered = list(filter(lambda film:
+                               film.film_item is not None and
+                               film.film_rating is not None and
+                               film.film_item.title_type == title_type and
+                               film.film_rating.num_ratings >= 1000 and
+                               film.film_item.start_year >= start_year and
+                               film.film_item.start_year <= end_year, self.films.values()))
 
-        return [sorted(filter(lambda film: film.film_item.start_year == year, filtered), key=lambda film: film.film_rating.rating)[:num]
-                for year in range(start_year, end_year)]
+        for year in range(start_year, end_year + 1):
+
+            results = sorted(
+                sorted(
+                    sorted(
+                        filter(lambda film: film.film_item.start_year ==
+                               year, filtered),
+                        key=lambda film: film.film_item.primary_title),
+                    key=lambda film: film.film_rating.num_ratings, reverse=True),
+                key=lambda film: film.film_rating.rating, reverse=True)[:num]
+
+            print('\tYEAR: ' + str(year))
+
+            i = 1
+            for film in results:
+                print('\t\t{0}. RATING: {1}, VOTES: {2}, MOVIE: {3}'.format(
+                    i, film.film_rating.rating, film.film_rating.num_ratings, film.film_item))
+                i += 1
+
+            if len(results) == 0:
+                print('\t\tNo match found!')

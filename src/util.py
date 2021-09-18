@@ -115,6 +115,6 @@ def timed_function(func):
         func(*args)
         t = timer()
 
-        print('elapsed time (s): ' + str((t - t0)))
+        print('elapsed time (s): {:e}'.format((t - t0)))
 
     return wrapped
