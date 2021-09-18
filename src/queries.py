@@ -90,14 +90,38 @@ class QueryableFilmCollection:
         if len(results) == 0:
             print('\tNo match found!')
 
-    @ timed_function
-    def most_votes(self, title_type: str, num: int) -> list[Film]:
-        return list(
-            sorted(
-                filter(
-                    lambda film: film.film_item.title_type == title_type,
-                    self.films.values()),
-                key=lambda film: film.film_rating.num_votes))[:num]
+    @timed_function
+    def most_votes(self, title_type: str, num: int) -> None:
+        print('Processing MOST_VOTES', title_type, num)
+
+        sorted_films = sorted(filter(
+            lambda film:
+                film.film_rating is not None and
+                film.film_item.title_type == title_type,
+            self.films.values()),
+            key=lambda film: film.film_rating.num_ratings, reverse=True)
+
+        results = sorted_films[:num]  # take the top "num" results
+
+        # now we sort by alpha and then by num votes again
+        # we do this here to avoid sorting the entire contents of the
+        # dictionary, and even though we are re-sorting by num votes,
+        # assuming O(n) sort time, if len(results) is less than half
+        # of the total films in the dictionary matching title_type,
+        # this approach is still more efficient because (2 * j * O(n)) + O(n)
+        # where j < 0.5 is will always be strictly smaller than O(n) * 2
+
+        # </rant>
+
+        results.sort(key=lambda film: film.film_item.primary_title)
+        results.sort(
+            key=lambda film: film.film_rating.num_ratings, reverse=True)
+
+        for film in results:
+            print('\t' + str(film.film_item))
+
+        if len(results) == 0:
+            print('\tNo match found!')
 
     @ timed_function
     def top(self, title_type: str, num: int, start_year: int, end_year: int) -> list[Film]:

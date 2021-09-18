@@ -14,9 +14,11 @@ def main(argv):
     collection = QueryableFilmCollection(
         'C:/Users/17198/rit/projects/csapx/project-1-movies-erwijet/data/small.basics.tsv', 'C:/Users/17198/rit/projects/csapx/project-1-movies-erwijet/data/small.ratings.tsv')
 
-    collection.runtime('movie', 142, 168)
-    collection.runtime('movie', 237, 240)
-    collection.runtime('short', 58, 59)
+    collection.most_votes('movie', 5)
+    collection.most_votes('tvSpecial', 5)
+    collection.most_votes('movie', 2)
+    collection.most_votes('videoGame', 1)
+    collection.most_votes('tvSeries', 5)
 
 
 if __name__ == '__main__':

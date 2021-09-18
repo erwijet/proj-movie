@@ -76,6 +76,15 @@ class FilmRating:
         """
 
         props = tsv_parsable.split('\t')
+
+        # convert prop at idx 1 (rating) to float
+
+        props[1] = float(props[1])
+
+        # convert prop at idx 2 (num_ratings) to int
+
+        props[2] = int(props[2])
+
         return FilmRating(*props)
 
 
@@ -104,6 +113,8 @@ def timed_function(func):
     def wrapped(*args):
         t0 = time()
         func(*args)
-        print('elapsed time (s): ' + str((time() - t0)))
+        t = time()
+
+        print('elapsed time (s): ' + str((t - t0)))
 
     return wrapped
