@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from time import time
+from timeit import default_timer as timer
 
 
 @dataclass
@@ -111,9 +111,9 @@ def timed_function(func):
     functionality
     """
     def wrapped(*args):
-        t0 = time()
+        t0 = timer()
         func(*args)
-        t = time()
+        t = timer()
 
         print('elapsed time (s): ' + str((t - t0)))
 
