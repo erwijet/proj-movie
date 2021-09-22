@@ -15,28 +15,30 @@ def main(argv):
         'data/' + size + '.basics.tsv',
         'data/' + size + '.ratings.tsv')
 
-    cmd = ''
+    cmd = ''  # scope
+
+    VALID_QUERIES = ['CONTAINS', 'LOOKUP', 'MOST_VOTES',
+                     'RUNTIME', 'TOP', 'YEAR_AND_GENRE']
 
     while cmd != '\\q':
         cmd, *args = input('query expresion # ').split(' ')
 
-        if cmd == 'CONTAINS':
-            collection.contains(*args)
-        if cmd == 'LOOKUP':
-            collection.lookup(*args)
-        if cmd == 'MOST_VOTES':
-            collection.most_votes(*args)
-        if cmd == 'RUNTIME':
-            collection.runtime(*args)
-        if cmd == 'TOP':
-            collection.top(*args)
-        if cmd == 'YEAR_AND_GENRE':
-            collection.year_and_genre(*args)
+        if cmd not in VALID_QUERIES and cmd != '\\?':
+            print()     # newline
+            continue    # process nexy command
+
+        # map cmd to the collection attribute function
+        # with the same name. Then, invoke that attribute function
+        # and pass the args specified to it
+
+        if cmd in VALID_QUERIES:
+            getattr(collection, cmd.lower())(*args)
+            continue  # process next command
+
         if cmd == '\\?':
             with open('help.txt') as f:
-                print(''.join([l for l in f]))
-        else:
-            print()  # newline
+                content = ''.join([line for line in f])
+                print(content)
 
 
 if __name__ == '__main__':
