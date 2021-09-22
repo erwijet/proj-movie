@@ -1,0 +1,11 @@
+
+[QUERY] <args>
+
+Queries:
+    CONATINS        <titleType> <words>
+    LOOKUP          <tconst>
+    MOST_VOTES      <titleType> <num>
+    RUNTIME         <titleType> <min-minutes> <max-minutes>
+    TOP             <titleType> <num> <start-year> <end-year>
+    YEAR_GENRE      <titleType> <year> <genre>
+

@@ -1,26 +1,42 @@
 from sys import argv
-from enum import Enum
 from queries import QueryableFilmCollection
 
 from util import *
 
 
-class DataSetType(Enum):
-    SMALL = 'small'
-    LARGE = 'large'
-
-
 def main(argv):
-    collection = QueryableFilmCollection(
-        'C:/Users/17198/rit/projects/csapx/project-1-movies-erwijet/data/small.basics.tsv', 'C:/Users/17198/rit/projects/csapx/project-1-movies-erwijet/data/small.ratings.tsv')
 
-    collection.top('movie', 3, 1994, 1995)
-    collection.top('movie', 10, 1990, 1995)
-    collection.top('movie', 20, 2010, 2010)
-    collection.top('movie', 10, 2015, 2019)
-    collection.top('movie', 1, 2000, 2020)
-    collection.top('videoGame', 5, 2010, 2020)
-    collection.top('tvSeries', 4, 2000, 2019)
+    if len(argv) > 1:
+        _, size = argv
+    else:
+        size = 'large'
+
+    collection = QueryableFilmCollection(
+        'data/' + size + '.basics.tsv',
+        'data/' + size + '.ratings.tsv')
+
+    cmd = ''
+
+    while cmd != '\\q':
+        cmd, *args = input('query expresion # ').split(' ')
+
+        if cmd == 'CONTAINS':
+            collection.contains(*args)
+        if cmd == 'LOOKUP':
+            collection.lookup(*args)
+        if cmd == 'MOST_VOTES':
+            collection.most_votes(*args)
+        if cmd == 'RUNTIME':
+            collection.runtime(*args)
+        if cmd == 'TOP':
+            collection.top(*args)
+        if cmd == 'YEAR_AND_GENRE':
+            collection.year_and_genre(*args)
+        if cmd == '\\?':
+            with open('help.txt') as f:
+                print(''.join([l for l in f]))
+        else:
+            print()  # newline
 
 
 if __name__ == '__main__':
